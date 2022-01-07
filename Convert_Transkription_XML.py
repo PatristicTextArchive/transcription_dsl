@@ -16,7 +16,7 @@ data_paths = glob.glob(data_dir+"/*.txt")
 for file in sorted(data_paths):
     print(file)
     content = open(file).read()
-    text = re.search(r'TEXT: ([\w\s(),]+?)\n', content)
+    text = re.search(r'TEXT: ([\w\s(),\.]+?)\n', content)
     ms = re.search(r'HS: ([\w\s]+?)_([\w\s]+?)_([\w\s]+?)_([\w\s]+?)\n', content)
     sigle = re.search(r'SIGLE: ([\w\s()\.]+?)\n', content)
     diktyon = re.search(r'DIKTYON: ([0-9]+?)\n', content)
@@ -36,7 +36,7 @@ for file in sorted(data_paths):
     content_new = re.sub(r'\n\([0-9rv]+?\)', r'', content_new) # Löschen
     #content_new = re.sub(r'Anmerkung: .+?\n', r'', content_new) # Löschen
     print(text.group(1),sigle.group(1),initial_page.group(1))
-    with open(xml_dir+text.group(1)+".pta-Ms"+sigle.group(1)+".xml", "w") as f:    
+    with open(xml_dir+"/"+text.group(1)+".pta-Ms"+sigle.group(1)+".xml", "w") as f:    
         # Besondere Texte
         content_new = re.sub(r'3([\w\s]+?)~([1-4]{1})~3', r'<note place="margin_\2">\1</note>', content_new) # Marginalien; Nachbearbeitung bzgl. Positionsnummer:
         content_new = re.sub(r'<note place="margin_1">', r'<note place="top">', content_new)
@@ -128,12 +128,13 @@ for file in sorted(data_paths):
             </refsDecl>
         </encodingDesc>
         <revisionDesc>
-            <change who="#'''+editor.group(1)+'''" when="'''+date.group(1)+'''">Transkript der Handschrift.</change>
+            <change who="#'''+editor.group(2)+'''" when="'''+date.group(1)+'''">Transkription des Textes</change>
         </revisionDesc>
     </teiHeader>
     <text xml:lang="grc">
         <body>
-            <div type="edition"><pb n="'''+initial_page.group(1)+'''"/>
+            <div type="edition" xml:lang="grc" n="urn:cts:pta:'''+text.group(1)+'''.pta-Ms'''+sigle.group(1)+'''">
+            <pb n="'''+initial_page.group(1)+'''"/>
             <head><title>'''+title.group(1)+'''</title></head>
             <div type="textpart" subtype="chapter" n="1">
             <p>'''+content_new+'''</p>
@@ -143,16 +144,4 @@ for file in sorted(data_paths):
     </text>
 </TEI>
     ''', file=f)
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
 
